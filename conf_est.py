@@ -1,4 +1,4 @@
-"""This file containts conf_wis class that is used to
+"""This file containts conf_est class that is used to
 estimate importance sampling and per-decision importance 
 sampling of confounded MDP. The main part of the code is borrowed 
 from https://github.com/StanfordAI4HI/off_policy_confounding/blob/master/sepsis/core/conf_wis.py
