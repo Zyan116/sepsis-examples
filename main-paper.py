@@ -1,4 +1,4 @@
-"""This file contains code necessary for replicating all results in the article "Methods of Off-policy Evaluation Under Unobserved Confounding",
+"""This file contains code necessary for replicating all results in the article "Methods of Off-policy Policy Evaluation Under Unobserved Confounding",
 where most of codes for constructing MDPs, producing behaviour and evaluation policies, and counterfactual evaluation 
 in the second example are borrowed from https://github.com/clinicalml/gumbel-max-scm/.
 """
