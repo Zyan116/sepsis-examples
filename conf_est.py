@@ -155,7 +155,7 @@ class conf_est(object):
         is_idx = (cum_ir > 0)
 
         if is_idx.sum() == 0:
-            print("Found zero matching WIS samples, continuing")
+            print("Found zero matching IS samples, continuing")
             return np.nan
         
         is_est = (cum_ir) * returns
@@ -261,7 +261,7 @@ class conf_est(object):
         pdis_idx = (cum_ir > 0)
 
         if pdis_idx.sum() == 0:
-            print("Found zero matching WIS samples, continuing")
+            print("Found zero matching PDIS samples, continuing")
             return np.nan
 
         pdis = (cum_ir) * returns
