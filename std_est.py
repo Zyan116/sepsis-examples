@@ -166,13 +166,13 @@ class std_est(object):
         p_behaviour[terminated_idx] = 1
         p_eval[terminated_idx] = 1
 
-        assert np.all(p_behaviour > 0), "Some actions had zero prob under p_obs, WIS fails"
+        assert np.all(p_behaviour > 0), "Some actions had zero prob under p_obs, IS fails"
         
         cum_ir = (p_eval / p_behaviour).prod(axis=1)
         is_idx = (cum_ir > 0)
 
         if is_idx.sum() == 0:
-            print("Found zero matching WIS samples, continuing")
+            print("Found zero matching IS samples, continuing")
             return np.nan
 
         is_est = (cum_ir) * returns
@@ -275,13 +275,13 @@ class std_est(object):
         p_behaviour[terminated_idx] = 1
         p_eval[terminated_idx] = 1
 
-        assert np.all(p_behaviour > 0), "Some actions had zero prob under p_obs, WIS fails"
+        assert np.all(p_behaviour > 0), "Some actions had zero prob under p_obs, PDIS fails"
         
         cum_ir = (p_eval / p_behaviour).cumprod(axis=1)
         pdis_idx = (cum_ir > 0)
 
         if pdis_idx.sum() == 0:
-            print("Found zero matching WIS samples, continuing")
+            print("Found zero matching PDIS samples, continuing")
             return np.nan
 
         pdis = (cum_ir) * returns
@@ -352,8 +352,10 @@ class std_est(object):
         
         Gamma = self.config['Gamma']
         
-        policies_u[..., 0] = policies[..., 0] / (1 + np.sqrt(Gamma)) + policies[..., 1] * np.sqrt(Gamma) / (1 + np.sqrt(Gamma))
-        policies_u[..., 1] = policies[..., 0] * np.sqrt(Gamma) / (1 + np.sqrt(Gamma)) + policies[..., 1] / (1 + np.sqrt(Gamma))
+        policies_u[..., 0] = policies[..., 0] / (1 + np.sqrt(Gamma)) 
+        + policies[..., 1] * np.sqrt(Gamma) / (1 + np.sqrt(Gamma))
+        policies_u[..., 1] = policies[..., 0] * np.sqrt(Gamma) / (1 + np.sqrt(Gamma)) 
+        + policies[..., 1] / (1 + np.sqrt(Gamma))
         
         return policies_u
 
