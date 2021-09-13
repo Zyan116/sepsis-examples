@@ -104,7 +104,7 @@ for i in range(rep):
     est_mat[i, 4] = spdis_w.mean()
     est_mat[i, 5] = spdis_op.mean()
     
-    # true aveage reward
+    # true reward under evalaution policy
     dgen_w = DGEN.data_generator(transitions=(tx, tr), 
             policies=(optimal_policy_st, t0_policy[0,...]), 
             value_fn=value_function, config=config)
@@ -177,7 +177,7 @@ for i in range(rep):
         mat_spdis_hor[it, i+rep] = spdis_w.mean()
         mat_spdis_hor[it, i+2*rep] = spdis_op.mean()
         
-        # true average reward
+        # true reward under evaluation policy
         dgen_w = DGEN.data_generator(transitions=(tx, tr), 
             policies=(optimal_policy_st, t0_policy[0,...]), 
             value_fn=value_function, config=config)
@@ -384,7 +384,7 @@ trajectories, returns, _, _ = dgen.simulate(config['num_itrs'], use_tqdm=True)
 
 for i in range(len(sizes)):
     n = sizes[i]
-    idxs = np.random.choice(np.arange(5000), size = n, replace = False)
+    idxs = np.random.choice(np.arange(500), size = n, replace = False)
     traj, ret = trajectories[idxs, :], returns[idxs]
     ## caculating bounds
     lm_config = {'Gamma': 2.0, 'lr':5 * 1e-2, 'epoch':80, 'nS': NUM_FULL_STATES + 1
@@ -431,7 +431,7 @@ trajectories, returns, _, _ = dgen.simulate(config['num_itrs'], use_tqdm=True)
 
 loss_minimization_config = {'Gamma': 1.0, 'lr':5 * 1e-2, 'epoch':150, 
         'nS': NUM_FULL_STATES + 1, 'nA': NUM_ACTIONS_TOTAL, 
-        'bootstrap': True, 'n_bootstrap': 50}
+        'bootstrap': True, 'n_bootstrap': 25}
 lb_data = {'samps': trajectories, 'returns': returns}
 
 GAMMAs = np.arange(1.0, 7.0, 0.5)
@@ -486,7 +486,7 @@ trajectories, returns, _, _ = dgen.simulate(config['num_itrs'], use_tqdm=True)
 
 loss_minimization_config = {'Gamma': 1.0, 'lr':5 * 1e-2, 'epoch':150
                             , 'nS': NUM_FULL_STATES + 1, 'nA': NUM_ACTIONS_TOTAL
-                            , 'bootstrap': True, 'n_bootstrap': 50}
+                            , 'bootstrap': True, 'n_bootstrap': 25}
 lb_data = {'samps': trajectories, 'returns': returns}
 
 GAMMAs = np.arange(1.0, 9.0, 0.5)
@@ -605,7 +605,7 @@ initial_state_counts = np.zeros((n_states_abs,1))
 for i in range(initial_state_arr.shape[0]):
     initial_state_counts[initial_state_arr[i]] += 1
 
-proj_state_counts = proj_matrix.T.dot(initial_state_counts).T   # Project initial state counts to new states
+proj_state_counts = proj_matrix.T.dot(initial_state_counts).T   # Project initial state counts to reduced state space
 proj_p_initial_state = proj_state_counts / proj_state_counts.sum()
 
 zero_sa_pairs = proj_tx_mat.sum(axis=-1) == 0   # Because some SA pairs are never observed, assume they cause instant death
@@ -631,7 +631,7 @@ proj_f = np.vectorize(projection_func)
 states_proj = proj_f(states)
 obs_samps_proj = format_dgen_samps(states_proj, actions, rewards, diab, 20, 1000)
 
-# true average reward of evaluation policy
+# true reward under evaluation policy
 states_rl, actions_rl, rewards_rl, diab_rl, _, _ = dgen.simulate(1000, 20, policy=RlPol[:-2, :]
                                                                  , policy_idx_type='proj_obs', p_diabetes=0.2, use_tqdm=False) 
 
@@ -650,6 +650,7 @@ cf_rewards = []
 n_cf = [5, 10, 15, 20, 25, 30]
 
 for n in n_cf:
+    # generate cf trajectories
     this_cf_opt_samps_proj = BSampler.cf_trajectory(
         obs_samps_proj, 
         cf_policy=RlPol, 
@@ -658,7 +659,8 @@ for n in n_cf:
     this_cf_opt_samps_proj_reshaped = \
     this_cf_opt_samps_proj.reshape(this_cf_opt_samps_proj.shape[0] * this_cf_opt_samps_proj.shape[1]
                                    ,this_cf_opt_samps_proj.shape[2], this_cf_opt_samps_proj.shape[3])
-
+    
+    # cf reward
     this_offpol_opt_reward_cf = eval_on_policy(this_cf_opt_samps_proj_reshaped, discount=1, bootstrap=True, n_bootstrap=100)
     
     cf_trajectories[str(n) + ' cf samps'] = np.copy(this_cf_opt_samps_proj)
@@ -716,7 +718,7 @@ for idx_n in range(len(n_cf)):
     for tick in ax.yaxis.get_major_ticks():
         tick.label1.set_verticalalignment('center')     
     
-    # 94.8% of observed individuals have highest vote not lower than 90%.
+    # 94.8% of observed individuals have highest vote not lower than 90% when n = 10.
     print('Proportion of individuals with highest vote not lower than 90% when '+ str(n) + ' cf trajectories per observation:'
           , np.mean(cf_votes_prob[:, i] >= 0.9))
    
