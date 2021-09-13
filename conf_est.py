@@ -149,7 +149,7 @@ class conf_est(object):
         p_behaviour[terminated_idx] = 1
         p_eval[terminated_idx] = 1
 
-        assert np.all(p_behaviour > 0), "Some actions had zero prob under p_obs, WIS fails"
+        assert np.all(p_behaviour > 0), "Some actions had zero prob under p_obs, IS fails"
         
         cum_ir = (p_eval / p_behaviour).prod(axis=1)
         is_idx = (cum_ir > 0)
@@ -255,7 +255,7 @@ class conf_est(object):
         p_behaviour[terminated_idx] = 1
         p_eval[terminated_idx] = 1
 
-        assert np.all(p_behaviour > 0), "Some actions had zero prob under p_obs, WIS fails"
+        assert np.all(p_behaviour > 0), "Some actions had zero prob under p_obs, PDIS fails"
         
         cum_ir = (p_eval / p_behaviour).cumprod(axis=1)
         pdis_idx = (cum_ir > 0)
