@@ -5,7 +5,7 @@ https://github.com/StanfordAI4HI/off_policy_confounding/blob/master/sepsis/core/
 """
 
 import numpy as np
-from State import State
+from sepsisSimDiabetes.State import State
 from tqdm import tqdm
 
 class matrix_mdp(object):
